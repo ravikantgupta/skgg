@@ -1,19 +1,48 @@
 'use client';
+
+import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-// import SearchBar from "../SearchBar/SearchBar"
-export default function CardsSection() {
-  // const handleSearch = (query: string) => {
-  //   console.log("Searching for:", query);
-  //   // add your search logic here
-  // };
-  return (
-    <>
-    {/* <div className="flex justify-center mt-12">
-        <SearchBar onSearch={handleSearch} />
-      </div>
-     */}
+import axios from 'axios';
 
+interface Category {
+  id: number;
+  name: string;
+  url_key: string;
+  image: string;
+}
+
+export default function CardsSection() {
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loading, setLoading] = useState(true);
+  const baseImageUrl = 'https://skgpsd.com/skgpsdbe/public/';
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await axios.get(
+          'https://skgpsd.com/skgpsdbe/public/api/web/cat-home-albums'
+        );
+        setCategories(res.data?.data?.categories || []);
+      } catch (err) {
+        console.error('Error loading categories', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-lg font-medium">Loading cards...</p>
+      </div>
+    );
+  }
+
+  return (
     <section className="bg-white py-20">
       <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 lg:grid-cols-2 gap-12">
         {/* Card 1 */}
@@ -27,7 +56,7 @@ export default function CardsSection() {
               Premium Album Designing Starting At Just ₹40!
             </h3>
             <Link
-              href="/book"
+              href={categories[0] ? `/album/${categories[0].url_key}` : '#'}
               className="inline-block bg-black text-white px-6 py-3 rounded-xl font-medium hover:bg-gray-900 transition"
             >
               Book Now
@@ -60,7 +89,7 @@ export default function CardsSection() {
               Get Access to Premium PSD Templates Worth ₹5000
             </p>
             <Link
-              href="/book"
+              href={categories[1] ? `/album/${categories[1].url_key}` : '#'}
               className="inline-block bg-black text-white px-6 py-3 rounded-xl font-medium hover:bg-gray-900 transition"
             >
               Book Now
@@ -80,7 +109,5 @@ export default function CardsSection() {
         </div>
       </div>
     </section>
-
-    </>
   );
 }

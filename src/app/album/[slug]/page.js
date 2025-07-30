@@ -30,7 +30,7 @@ export default async function AlbumDetailPage({ params }) {
       </div>
      </>;
   }
-  const phoneNumber = "919876543210"; // replace with your number (include country code, no + sign)
+  const phoneNumber = "919990144668"; // replace with your number (include country code, no + sign)
   const messageText = "Hi, I want to book a service via your website.";
   
   const whatsappMessage = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(messageText)}`;

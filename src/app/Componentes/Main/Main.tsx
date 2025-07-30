@@ -1,6 +1,5 @@
 'use client';
 import Image from "next/image";
-import Link from "next/link";
 import { useEffect, useState } from "react";
 
 export default function WeddingOffer() {
@@ -19,7 +18,11 @@ export default function WeddingOffer() {
 
     return () => clearInterval(interval);
   }, [images.length]);
-
+  const phoneNumber = "919990144668"; // replace with your number (include country code, no + sign)
+  const messageText = "Hi, I want to book a service via your website.";
+  
+  const whatsappMessage = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(messageText)}`;
+  
   return (
     <section
       className="relative text-white bg-cover bg-center bg-no-repeat transition-all duration-1000"
@@ -41,12 +44,12 @@ export default function WeddingOffer() {
             <p className="text-gray-300 mb-6">
               Get a beautifully designed Wedding Album PSD file for just ₹1!
             </p>
-            <Link
-              href="/book"
+            <a
+              href={whatsappMessage}
               className="inline-block bg-yellow-400 text-black px-6 py-3 rounded font-semibold hover:bg-yellow-300 transition"
             >
               BOOK NOW
-            </Link>
+            </a>
           </div>
 
           {/* Right Image */}
