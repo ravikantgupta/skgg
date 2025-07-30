@@ -21,37 +21,37 @@ export default function Navbar() {
   const [open, setOpen] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
   const [albumDropdownOpen, setAlbumDropdownOpen] = useState(false); // for mobile
- 
+
   useEffect(() => {
     fetchCategories();
   }, []);
 
   const fetchCategories = async () => {
-      try {
-        const res = await axios.get(
-          "https://skgpsd.com/skgpsdbe/public/api/web/categories"
-        );
-        if (res.data?.data?.categories) {
-          setCategories(res.data.data.categories);
-        } else {
-          console.warn("No categories found in API response.");
-        }
-      } catch (error) {
-        console.error("Failed to fetch categories:", error);
+    try {
+      const res = await axios.get(
+        "https://skgpsd.com/skgpsdbe/public/api/web/categories"
+      );
+      if (res.data?.data?.categories) {
+        setCategories(res.data.data.categories);
+      } else {
+        console.warn("No categories found in API response.");
       }
-    };
+    } catch (error) {
+      console.error("Failed to fetch categories:", error);
+    }
+  };
   return (
     <header className="sticky top-0 bg-white shadow px-4 md:px-10 py-4 z-50">
       <div className="max-w-7xl mx-auto flex justify-between items-center">
         {/* Logo */}
         <div className="flex-shrink-0">
           <Link href="/">
-          <Image
-            src="/Images/skg-logo.png"
-            alt="Logo"
-            width={180}
-            height={90}
-          />
+            <Image
+              src="/Images/skg-logo.png"
+              alt="Logo"
+              width={180}
+              height={90}
+            />
           </Link>
         </div>
 
@@ -74,7 +74,6 @@ export default function Navbar() {
             <div className="absolute left-0 mt-2 w-48 bg-white border rounded shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition duration-200 z-10">
               <ul className="py-2">
                 {categories.map((cat, index) => {
-                 
                   return (
                     <li
                       key={cat?.id}
@@ -143,13 +142,13 @@ export default function Navbar() {
         )}
       >
         <div className="flex justify-between items-center mb-6">
-        <Link href="/">
-          <Image
-            src="/Images/skg-logo.png"
-            alt="Logo"
-            width={180}
-            height={90}
-          />
+          <Link href="/">
+            <Image
+              src="/Images/skg-logo.png"
+              alt="Logo"
+              width={180}
+              height={90}
+            />
           </Link>
           <button onClick={() => setOpen(false)}>
             <svg
@@ -179,48 +178,43 @@ export default function Navbar() {
 
           {/* Clickable Dropdown */}
           <div>
-            <div
-              className="flex items-center justify-between cursor-pointer"
-              onClick={() => setAlbumDropdownOpen(!albumDropdownOpen)}
-            >
-              <span className="hover:text-pink-600 transition">Album PSD</span>
-              <ChevronDown
-                size={16}
-                className={clsx(
-                  "transition",
-                  albumDropdownOpen && "rotate-180"
-                )}
-              />
-            </div>
+  {/* Dropdown Toggle */}
+  <div
+    className="flex items-center justify-between py-2 cursor-pointer"
+    onClick={() => setAlbumDropdownOpen(!albumDropdownOpen)}
+  >
+    <span className="text-gray-700 hover:text-pink-600 transition font-medium">
+      Album PSD
+    </span>
+    <ChevronDown
+      size={16}
+      className={clsx("transition-transform", albumDropdownOpen && "rotate-180")}
+    />
+  </div>
 
-            {albumDropdownOpen && (
-              <ul className="pl-4 mt-2">
-                {[
-                  "12 X 36 album",
-                  "18 X 24 album",
-                  "20 X 30 album",
-                  "14 X 40 album",
-                ].map((item, index, array) => (
-                  <li
-                    key={item}
-                    className={
-                      index !== array.length - 1
-                        ? "border-b border-gray-200"
-                        : ""
-                    }
-                  >
-                    <Link
-                      href="/albumpsd"
-                      className="block py-2 text-sm text-gray-700 hover:text-pink-600"
-                      onClick={() => setOpen(false)}
-                    >
-                      {item}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
+  {/* Dropdown Items (only visible when open) */}
+  {albumDropdownOpen && (
+    <ul className="pl-4 border-l border-gray-200">
+      {categories.map((cat, index) => (
+        <li
+          key={cat.id}
+          className={index !== categories.length - 1 ? "border-b border-gray-200" : ""}
+        >
+          <Link
+            href={`/album/${cat.url_key}`}
+            className="block py-2 text-sm text-gray-700 hover:text-pink-600"
+            onClick={() => {
+              setOpen(false);
+              setAlbumDropdownOpen(false);
+            }}
+          >
+            {cat.name}
+          </Link>
+        </li>
+      ))}
+    </ul>
+  )}
+</div>
 
           <Link href="/courses" onClick={() => setOpen(false)}>
             Courses

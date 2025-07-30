@@ -53,7 +53,7 @@ export default function CardsSection() {
               Album Designing
             </h4>
             <h3 className="text-2xl font-semibold text-gray-900 mb-4 leading-snug">
-              Premium Album Designing Starting At Just ₹40!
+              Premium Album Designing Starting At Just ₹35!
             </h3>
             <Link
               href={categories[0] ? `/album/${categories[0].url_key}` : '#'}
@@ -83,7 +83,7 @@ export default function CardsSection() {
               WhatsApp Group
             </h4>
             <h3 className="text-2xl font-semibold text-gray-900 mb-2 leading-snug">
-              Join Our WhatsApp Group For Just ₹199
+              Join Our WhatsApp Group For Just ₹299/Month.
             </h3>
             <p className="text-gray-600 mb-4">
               Get Access to Premium PSD Templates Worth ₹5000

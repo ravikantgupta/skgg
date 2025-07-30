@@ -54,7 +54,7 @@ export default function WeddingOffer() {
 
           {/* Right Image */}
           <div className="relative w-full h-[400px] sm:h-[500px]">
-            <div className="relative w-full h-full border-4 border-white rounded-md overflow-hidden">
+            <div className="relative w-full h-full border-2 border-white   overflow-hidden">
               <Image
                 src="/Images/banner-psd.jpg"
                 alt="Wedding Couple"
