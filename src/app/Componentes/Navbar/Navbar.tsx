@@ -166,7 +166,6 @@ export default function Navbar() {
             </svg>
           </button>
         </div>
-
         {/* Mobile Nav Links */}
         <nav className="flex flex-col space-y-4 text-base font-medium text-gray-800">
           <Link href="/" onClick={() => setOpen(false)}>
@@ -178,7 +177,7 @@ export default function Navbar() {
 
           {/* Clickable Dropdown */}
           <div>
-  {/* Dropdown Toggle */}
+   
   <div
     className="flex items-center justify-between py-2 cursor-pointer"
     onClick={() => setAlbumDropdownOpen(!albumDropdownOpen)}
@@ -215,8 +214,7 @@ export default function Navbar() {
     </ul>
   )}
 </div>
-
-          <Link href="/courses" onClick={() => setOpen(false)}>
+      <Link href="/courses" onClick={() => setOpen(false)}>
             Courses
           </Link>
           <Link href="/invitationVideo" onClick={() => setOpen(false)}>
