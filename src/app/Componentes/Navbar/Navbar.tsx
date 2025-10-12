@@ -1,6 +1,8 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
+import { FaShoppingCart } from "react-icons/fa";
+import { FiShoppingCart } from "react-icons/fi"; 
 import { Phone, ChevronDown } from "lucide-react";
 import { useEffect, useState } from "react";
 import axios from "axios";
@@ -40,6 +42,24 @@ export default function Navbar() {
       console.error("Failed to fetch categories:", error);
     }
   };
+
+  const [cartCount, setCartCount] = useState(0);
+
+  useEffect(() => {
+    // function to update cart count
+    const updateCartCount = () => {
+      const stored = JSON.parse(localStorage.getItem("cart") || "[]");
+      setCartCount(stored.length);
+    };
+
+    updateCartCount(); // initial load
+
+    // listen for custom event
+    window.addEventListener("cartUpdated", updateCartCount);
+
+    return () => window.removeEventListener("cartUpdated", updateCartCount);
+  }, []);
+  
   return (
     <header className="sticky top-0 bg-white shadow px-4 md:px-10 py-4 z-50">
       <div className="max-w-7xl mx-auto flex justify-between items-center">
@@ -100,6 +120,23 @@ export default function Navbar() {
           <Link href="/invitationVideo">Invitation Video</Link>
           <Link href="/clipArt">Clip Art</Link>
           <Link href="/feedback">Client</Link>
+          <Link href="/cart" className="relative flex items-center">
+          <span className="mr-1">Cart</span>
+          <FiShoppingCart className="text-2xl" />
+          
+          {cartCount > 0 && (
+            <span className="absolute -top-2 -right-3 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
+              {cartCount}
+            </span>
+          )}
+        </Link>
+
+          {/* <Link href="/cart" className="flex items-center justify-center gap-2">
+            
+           <FaShoppingCart className="text-2xl" />
+           <span>Cart</span>
+          </Link> */}
+
           <Link href="/contact">Contact</Link>
         </nav>
 
@@ -115,6 +152,26 @@ export default function Navbar() {
             </div>
           </a>
         </div>
+
+
+                {/* Mobile Cart Icon (Visible only on mobile) */}
+                <Link href="/cart" className="relative flex items-center md:hidden">
+          <span className="mr-1">Cart</span>
+          <FiShoppingCart className="text-2xl" />
+          
+          {cartCount > 0 && (
+            <span className="absolute -top-2 -right-3 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
+              {cartCount}
+            </span>
+          )}
+        </Link>
+{/* <Link
+  href="/cart"
+  className="flex items-center gap-1 text-black md:hidden"
+>
+  <FaShoppingCart className="text-2xl" />
+  <span className="text-sm font-medium">Cart</span>
+</Link> */}
 
         {/* Mobile Hamburger */}
         <button onClick={() => setOpen(true)} className="md:hidden z-50">
@@ -141,6 +198,7 @@ export default function Navbar() {
           open ? "translate-x-0" : "-translate-x-full"
         )}
       >
+        
         <div className="flex justify-between items-center mb-6">
           <Link href="/">
             <Image
@@ -150,6 +208,7 @@ export default function Navbar() {
               height={90}
             />
           </Link>
+          
           <button onClick={() => setOpen(false)}>
             <svg
               className="w-6 h-6 text-black"
@@ -177,44 +236,50 @@ export default function Navbar() {
 
           {/* Clickable Dropdown */}
           <div>
-   
-  <div
-    className="flex items-center justify-between py-2 cursor-pointer"
-    onClick={() => setAlbumDropdownOpen(!albumDropdownOpen)}
-  >
-    <span className="text-gray-700 hover:text-pink-600 transition font-medium">
-      Album PSD
-    </span>
-    <ChevronDown
-      size={16}
-      className={clsx("transition-transform", albumDropdownOpen && "rotate-180")}
-    />
-  </div>
+            <div
+              className="flex items-center justify-between py-2 cursor-pointer"
+              onClick={() => setAlbumDropdownOpen(!albumDropdownOpen)}
+            >
+              <span className="text-gray-700 hover:text-pink-600 transition font-medium">
+                Album PSD
+              </span>
+              <ChevronDown
+                size={16}
+                className={clsx(
+                  "transition-transform",
+                  albumDropdownOpen && "rotate-180"
+                )}
+              />
+            </div>
 
-  {/* Dropdown Items (only visible when open) */}
-  {albumDropdownOpen && (
-    <ul className="pl-4 border-l border-gray-200">
-      {categories.map((cat, index) => (
-        <li
-          key={cat.id}
-          className={index !== categories.length - 1 ? "border-b border-gray-200" : ""}
-        >
-          <Link
-            href={`/album/${cat.url_key}`}
-            className="block py-2 text-sm text-gray-700 hover:text-pink-600"
-            onClick={() => {
-              setOpen(false);
-              setAlbumDropdownOpen(false);
-            }}
-          >
-            {cat.name}
-          </Link>
-        </li>
-      ))}
-    </ul>
-  )}
-</div>
-      <Link href="/courses" onClick={() => setOpen(false)}>
+            {/* Dropdown Items (only visible when open) */}
+            {albumDropdownOpen && (
+              <ul className="pl-4 border-l border-gray-200">
+                {categories.map((cat, index) => (
+                  <li
+                    key={cat.id}
+                    className={
+                      index !== categories.length - 1
+                        ? "border-b border-gray-200"
+                        : ""
+                    }
+                  >
+                    <Link
+                      href={`/album/${cat.url_key}`}
+                      className="block py-2 text-sm text-gray-700 hover:text-pink-600"
+                      onClick={() => {
+                        setOpen(false);
+                        setAlbumDropdownOpen(false);
+                      }}
+                    >
+                      {cat.name}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+          <Link href="/courses" onClick={() => setOpen(false)}>
             Courses
           </Link>
           <Link href="/invitationVideo" onClick={() => setOpen(false)}>
@@ -224,6 +289,7 @@ export default function Navbar() {
             Clip Art
           </Link>
           <Link href="/feedback">Client</Link>
+          
           <Link href="/contact" onClick={() => setOpen(false)}>
             Contact
           </Link>

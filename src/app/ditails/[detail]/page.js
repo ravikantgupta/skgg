@@ -54,7 +54,7 @@ export default async function DetailPage({ params }) {
               rel="noopener noreferrer"
               className="text-sm border border-black text-white bg-black py-1.5 px-3 h-[2rem] rounded hover:bg-gray-700 transition"
             >
-              Book Now
+              add to cart
             </a>
          </div>
           <LightboxClient galleryImages={galleryImages} />
