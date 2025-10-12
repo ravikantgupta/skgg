@@ -1,8 +1,8 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import { FaShoppingCart } from "react-icons/fa";
-import { FiShoppingCart } from "react-icons/fi"; 
+import { FiUser } from "react-icons/fi";
+import { FiShoppingCart } from "react-icons/fi";
 import { Phone, ChevronDown } from "lucide-react";
 import { useEffect, useState } from "react";
 import axios from "axios";
@@ -59,7 +59,28 @@ export default function Navbar() {
 
     return () => window.removeEventListener("cartUpdated", updateCartCount);
   }, []);
-  
+
+  const [showProfile, setShowProfile] = useState(false);
+
+  // Simulated login state
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // false = not logged in
+
+  // Sample user data
+  const user = {
+    name: "John Doe",
+    email: "john.doe@example.com",
+  };
+
+  const handleProfileClick = () => {
+    if (isLoggedIn) {
+      setShowProfile(true);
+    } else {
+      alert("Please login first!");
+      // Redirect to login page
+      window.location.href = "/login";
+    }
+  };
+
   return (
     <header className="sticky top-0 bg-white shadow px-4 md:px-10 py-4 z-50">
       <div className="max-w-7xl mx-auto flex justify-between items-center">
@@ -121,15 +142,15 @@ export default function Navbar() {
           <Link href="/clipArt">Clip Art</Link>
           <Link href="/feedback">Client</Link>
           <Link href="/cart" className="relative flex items-center">
-          <span className="mr-1">Cart</span>
-          <FiShoppingCart className="text-2xl" />
-          
-          {cartCount > 0 && (
-            <span className="absolute -top-2 -right-3 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
-              {cartCount}
-            </span>
-          )}
-        </Link>
+            <span className="mr-1">Cart</span>
+            <FiShoppingCart className="text-2xl" />
+
+            {cartCount > 0 && (
+              <span className="absolute -top-2 -right-3 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
+                {cartCount}
+              </span>
+            )}
+          </Link>
 
           {/* <Link href="/cart" className="flex items-center justify-center gap-2">
             
@@ -138,34 +159,75 @@ export default function Navbar() {
           </Link> */}
 
           <Link href="/contact">Contact</Link>
+
+          {showProfile && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+              <div className="bg-white p-6 rounded shadow-md w-80">
+                <h2 className="text-xl font-bold mb-4">User Profile</h2>
+                <p>
+                  <span className="font-semibold">Name: </span>
+                  {user.name}
+                </p>
+                <p className="mt-2">
+                  <span className="font-semibold">Email: </span>
+                  {user.email}
+                </p>
+
+                <div className="mt-4 flex justify-end gap-2">
+                  <button
+                    onClick={() => {
+                      alert("Logging out...");
+                      setShowProfile(false);
+                      setIsLoggedIn(false); // simulate logout
+                    }}
+                    className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition"
+                  >
+                    Logout
+                  </button>
+                  <button
+                    onClick={() => setShowProfile(false)}
+                    className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400 transition"
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </nav>
 
         {/* Desktop Contact */}
-        <div className="hidden md:flex items-center gap-2">
-          <div className="bg-black text-white p-2 rounded-full">
-            <Phone size={20} />
-          </div>
-          <a href="tel:+91 9990144668">
+        <div className="hidden md:flex items-center gap-5">
+         
+          {/* <a href="tel:+91 9990144668">
             <div className="text-sm leading-tight">
               <p className="text-gray-600">Contact us</p>
               <p className="font-bold text-black">+91 9990144668</p>
             </div>
-          </a>
+          </a> */}
+          <div className="flex items-center gap-4">
+            {/* Profile Button */}
+            <button
+              onClick={handleProfileClick}
+              className="w-10 h-10 flex items-center justify-center bg-gray-700 hover:bg-gray-600 text-white rounded-full transition"
+            >
+              <FiUser size={20} />
+            </button>
+          </div>
         </div>
 
-
-                {/* Mobile Cart Icon (Visible only on mobile) */}
-                <Link href="/cart" className="relative flex items-center md:hidden">
+        {/* Mobile Cart Icon (Visible only on mobile) */}
+        <Link href="/cart" className="relative flex items-center md:hidden">
           <span className="mr-1">Cart</span>
           <FiShoppingCart className="text-2xl" />
-          
+
           {cartCount > 0 && (
             <span className="absolute -top-2 -right-3 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
               {cartCount}
             </span>
           )}
         </Link>
-{/* <Link
+        {/* <Link
   href="/cart"
   className="flex items-center gap-1 text-black md:hidden"
 >
@@ -198,7 +260,6 @@ export default function Navbar() {
           open ? "translate-x-0" : "-translate-x-full"
         )}
       >
-        
         <div className="flex justify-between items-center mb-6">
           <Link href="/">
             <Image
@@ -208,7 +269,7 @@ export default function Navbar() {
               height={90}
             />
           </Link>
-          
+
           <button onClick={() => setOpen(false)}>
             <svg
               className="w-6 h-6 text-black"
@@ -289,7 +350,7 @@ export default function Navbar() {
             Clip Art
           </Link>
           <Link href="/feedback">Client</Link>
-          
+
           <Link href="/contact" onClick={() => setOpen(false)}>
             Contact
           </Link>
