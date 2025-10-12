@@ -34,11 +34,19 @@ export default function AlbumDetailPage() {
     const existingCart = JSON.parse(localStorage.getItem("cart")) || [];
     const alreadyInCart = existingCart.find((item) => item.id === album.id);
 
+    const product = {
+      id: album.id,
+      name: album.name,
+      image: album.image,
+      price: album.price || 99, // 💰 demo price
+      url_key: album.url_key,
+    };
+
     if (!alreadyInCart) {
-      existingCart.push(album);
+      existingCart.push(product);
       localStorage.setItem("cart", JSON.stringify(existingCart));
 
-      // 🔔 Notify Navbar
+      // 🔔 Notify Navbar to update cart count instantly
       window.dispatchEvent(new Event("cartUpdated"));
 
       alert(`${album.name} added to cart 🛒`);
@@ -71,41 +79,52 @@ export default function AlbumDetailPage() {
 
         {/* Albums Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-          {albums.map((album) => (
-            <div
-              key={album.url_key}
-              className="max-w-sm rounded overflow-hidden shadow-lg bg-white"
-            >
-              <Image
-                src={`https://skgpsd.com/skgpsdbe/public/${album.image}`}
-                alt={album.name}
-                width={800}
-                height={500}
-                className="w-full object-cover"
-              />
-              <div className="px-6 py-4">
-                <h2 className="text-xl font-semibold mb-2">{album.name}</h2>
-                <p className="text-gray-700 text-base pb-4">
-                  {album.meta_description}
-                </p>
-                <div className="flex justify-between gap-2">
-                  <Link
-                    href={`/ditails/${album.url_key}`}
-                    className="bg-black text-white text-sm px-4 py-2 rounded hover:bg-gray-800 inline-block"
-                  >
-                    View All
-                  </Link>
+          {albums.map((album) => {
+            const demoPrice = album.price || Math.floor(Math.random() * 200) + 99; // 💵 Random demo price
 
-                  <button
-                    onClick={() => handleAddToCart(album)}
-                    className="inline-block bg-yellow-400 text-white px-6 py-2 text-sm font-semibold rounded hover:bg-yellow-700 transition"
-                  >
-                    Add to Cart
-                  </button>
+            return (
+              <div
+                key={album.url_key}
+                className="max-w-sm rounded overflow-hidden shadow-lg bg-white"
+              >
+                <Image
+                  src={`https://skgpsd.com/skgpsdbe/public/${album.image}`}
+                  alt={album.name}
+                  width={800}
+                  height={500}
+                  className="w-full object-cover"
+                />
+
+                <div className="px-6 py-4">
+                  <h2 className="text-xl font-semibold mb-2">{album.name}</h2>
+                  <p className="text-gray-700 text-base pb-2">
+                    {album.meta_description}
+                  </p>
+
+                  {/* 💰 Demo Price */}
+                  <p className="text-lg font-bold text-green-600 mb-3">
+                    ₹{demoPrice}
+                  </p>
+
+                  <div className="flex justify-between gap-2">
+                    <Link
+                      href={`/ditails/${album.url_key}`}
+                      className="bg-black text-white text-sm px-4 py-2 rounded hover:bg-gray-800 inline-block"
+                    >
+                      View All
+                    </Link>
+
+                    <button
+                      onClick={() => handleAddToCart(album)}
+                      className="inline-block bg-yellow-400 text-white px-6 py-2 text-sm font-semibold rounded hover:bg-yellow-700 transition"
+                    >
+                      Add to Cart
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 
