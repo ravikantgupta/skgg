@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { auth } from "../firebase"; // use Firebase auth
+import { auth } from "../firebase";
 import Navbar from "../Componentes/Navbar/Navbar";
 import Footer from "../Componentes/Footer/Footer";
 
@@ -43,8 +43,8 @@ export default function CartPage() {
     }
 
     const options = {
-      key: "YOUR_RAZORPAY_KEY", // Replace with your Razorpay key
-      amount: amount * 100, // in paise
+      key: "YOUR_RAZORPAY_KEY",
+      amount: amount * 100,
       currency: "INR",
       name: "PSD Album Shop",
       description: `Buying: ${itemNames}`,
@@ -70,10 +70,10 @@ export default function CartPage() {
   const handleBuyNow = (item) => {
     if (!auth.currentUser) {
       alert("Please login first to purchase items.");
-      window.location.href = "/login"; // redirect to login page
+      window.location.href = "/login";
       return;
     }
-    const amount = item.price || 100;
+    const amount = item.price || 99;
     loadRazorpay(amount, item.name);
   };
 
@@ -87,10 +87,13 @@ export default function CartPage() {
 
     if (cartItems.length === 0) return;
 
-    const totalAmount = cartItems.reduce((sum, item) => sum + (item.price || 100), 0);
+    const totalAmount = cartItems.reduce((sum, item) => sum + (item.price || 99), 0);
     const itemNames = cartItems.map((i) => i.name).join(", ");
     loadRazorpay(totalAmount, itemNames);
   };
+
+  // 🧮 Total Price
+  const totalPrice = cartItems.reduce((sum, item) => sum + (item.price || 99), 0);
 
   return (
     <>
@@ -100,8 +103,8 @@ export default function CartPage() {
 
         {cartItems.length > 0 && (
           <p className="text-center text-gray-700 mb-4">
-            You have <span className="font-semibold">{cartItems.length}</span> item
-            {cartItems.length > 1 ? "s" : ""} in your cart
+            You have <span className="font-semibold">{cartItems.length}</span>{" "}
+            item{cartItems.length > 1 ? "s" : ""} in your cart
           </p>
         )}
 
@@ -118,6 +121,7 @@ export default function CartPage() {
           </div>
         ) : (
           <>
+            {/* Cart Items */}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
               {cartItems.map((item, index) => (
                 <div
@@ -132,7 +136,15 @@ export default function CartPage() {
                     className="rounded-t"
                   />
                   <div className="p-4 text-center">
-                    <h3 className="text-lg font-semibold text-gray-800">{item.name}</h3>
+                    <h3 className="text-lg font-semibold text-gray-800">
+                      {item.name}
+                    </h3>
+
+                    {/* 💰 Item Price */}
+                    <p className="text-green-600 font-semibold text-md mt-2">
+                      Price: ₹{item.price || 99}
+                    </p>
+
                     <div className="flex justify-center gap-3 mt-4">
                       <button
                         onClick={() => removeFromCart(item.id)}
@@ -152,12 +164,18 @@ export default function CartPage() {
               ))}
             </div>
 
-            <div className="text-center mt-6">
+            {/* 🧾 Total Price Section */}
+            <div className="text-center mt-10 border-t pt-6">
+              <h2 className="text-2xl font-bold text-gray-800 mb-3">
+                Total Price: ₹{totalPrice}
+              </h2>
+
               <button
                 onClick={handleBuyAll}
-                className="bg-green-600 cursor-pointer text-white px-6 py-2 rounded hover:bg-green-700 transition"
+                className="bg-green-600 cursor-pointer text-white px-6 py-3 rounded hover:bg-green-700 transition"
               >
-                Buy All ({cartItems.length} item{cartItems.length > 1 ? "s" : ""})
+                Buy All ({cartItems.length} item
+                {cartItems.length > 1 ? "s" : ""})
               </button>
             </div>
           </>

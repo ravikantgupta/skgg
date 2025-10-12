@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import Image from "next/image";
 import Link from "next/link";
- 
 import { addToCart } from "../../utils/cart";
 
 interface Album {
@@ -52,75 +51,76 @@ export default function AlbumCategories() {
   }
 
   return (
-    <>
-      
+    <section className="bg-white py-4">
+      <div className="max-w-7xl mx-auto px-4">
+        <div className="text-center mb-12">
+          <h5 className="text-2xl font-semibold tracking-widest text-gray-500 uppercase mb-1">
+            Albums Categories
+          </h5>
+        </div>
 
-      <section className="bg-white py-4">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center mb-12">
-            <h5 className="text-2xl font-semibold tracking-widest text-gray-500 uppercase mb-1">
-              Albums Categories
-            </h5>
-          </div>
+        {categories.map((category) => (
+          <div key={category.id} className="mb-16">
+            <div className="flex flex-row justify-between items-center mb-8">
+              <h5 className="text-2xl font-bold text-black uppercase">
+                {category.name}
+              </h5>
+              <Link
+                href={`/album/${category.url_key}`}
+                className="inline-block bg-black text-white px-6 py-3 h-[2.5rem] text-sm font-semibold rounded hover:bg-gray-800 transition"
+              >
+                View All
+              </Link>
+            </div>
 
-          {categories.map((category) => (
-            <div key={category.id} className="mb-16">
-              <div className="flex flex-row justify-between items-center mb-8">
-                <h5 className="text-2xl font-bold text-black uppercase">
-                  {category.name}
-                </h5>
-                <Link
-                  href={`/album/${category.url_key}`}
-                  className="inline-block bg-black text-white px-6 py-3 h-[2.5rem] text-sm font-semibold rounded hover:bg-gray-800 transition"
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+              {category.albums.map((album) => (
+                <div
+                  key={album.id}
+                  className="bg-gray-100 rounded shadow-md overflow-hidden hover:shadow-2xl transition-shadow duration-300 ease-in-out"
                 >
-                  View All
-                </Link>
-              </div>
+                  <Image
+                    src={baseImageUrl + album.image}
+                    alt={album.name}
+                    width={400}
+                    height={300}
+                    className="w-full h-auto"
+                  />
+                  <div className="p-4 text-center">
+                    <h3 className="text-md font-bold text-gray-800">
+                      {album.name}
+                    </h3>
+                    <p className="text-sm text-gray-600 mb-2">
+                      Get This Album on PSD
+                    </p>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-                {category.albums.map((album) => (
-                  <div
-                    key={album.id}
-                    className="bg-gray-100 rounded shadow-md overflow-hidden hover:shadow-2xl transition-shadow duration-300 ease-in-out"
-                  >
-                    <Image
-                      src={baseImageUrl + album.image}
-                      alt={album.name}
-                      width={400}
-                      height={300}
-                      className="w-full h-auto"
-                    />
-                    <div className="p-4 text-center">
-                      <h3 className="text-md font-bold text-gray-800">
-                        {album.name}
-                      </h3>
-                      <p className="text-sm text-gray-600 mb-4">
-                        Get This Album on PSD
-                      </p>
+                    {/* 👇 Demo Price Added Here */}
+                    <p className="text-lg font-semibold text-green-600 mb-4">
+                      ₹99 / Album
+                    </p>
 
-                      <div className="flex justify-center gap-3">
-                        <Link
-                          href={`/ditails/${album.url_key}`}
-                          className="inline-block bg-black text-white px-6 py-2 text-sm font-semibold rounded hover:bg-gray-800 transition"
-                        >
-                          View
-                        </Link>
+                    <div className="flex justify-center gap-3">
+                      <Link
+                        href={`/ditails/${album.url_key}`}
+                        className="inline-block bg-black text-white px-6 py-2 text-sm font-semibold rounded hover:bg-gray-800 transition"
+                      >
+                        View
+                      </Link>
 
-                        <button
-                          onClick={() => addToCart(album)}
-                          className="inline-block bg-yellow-400 text-white px-6 py-2 text-sm font-semibold rounded hover:bg-yellow-700 transition"
-                        >
-                          Add to Cart
-                        </button>
-                      </div>
+                      <button
+                        onClick={() => addToCart(album)}
+                        className="inline-block bg-yellow-400 text-white px-6 py-2 text-sm font-semibold rounded hover:bg-yellow-700 transition"
+                      >
+                        Add to Cart
+                      </button>
                     </div>
                   </div>
-                ))}
-              </div>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-      </section>
-    </>
+          </div>
+        ))}
+      </div>
+    </section>
   );
 }
