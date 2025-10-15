@@ -4,7 +4,7 @@ import { useState } from "react";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebase";
 import { useRouter } from "next/navigation";
-
+import { AuthAPI } from "../utils/api";
 export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
@@ -16,12 +16,27 @@ export default function LoginPage() {
     setError("");
 
     try {
-      await signInWithEmailAndPassword(auth, email, password);
-      alert("Login successful!");
-      router.push("/"); // redirect to home page after login
+     
+      
+      const res = await AuthAPI.login({
+        email,
+        password,
+      });
 
-      // Optional: Notify Navbar or other components
-      window.dispatchEvent(new Event("userLoggedIn"));
+      // ✅ Assuming Laravel returns { token, user, message }
+      if (res?.data?.token) {
+        localStorage.setItem("authToken", res.token);
+        localStorage.setItem("user", JSON.stringify(res.user));
+
+        alert("Login successful!");
+        router.push("/");
+
+        // Optional: Notify Navbar or other components
+        window.dispatchEvent(new Event("userLoggedIn"));
+      } else {
+        setError("Invalid response from server.");
+      }
+
     } catch (err) {
       console.error(err);
       setError("Invalid email or password");

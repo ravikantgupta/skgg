@@ -4,10 +4,12 @@ import { useState } from "react";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebase";
 import { useRouter } from "next/navigation";
-
+import { AuthAPI } from "../utils/api";
 export default function SignupPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
@@ -22,7 +24,14 @@ export default function SignupPage() {
     }
 
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
+      //await createUserWithEmailAndPassword(auth, email, password);
+      await AuthAPI.register({
+        first_name:name,
+        email,
+        phone,
+        password,
+       
+      });
       alert("Account created successfully!");
       router.push("/"); // redirect to home page
 
@@ -45,12 +54,33 @@ export default function SignupPage() {
 
         <form onSubmit={handleSignup} className="space-y-4">
           <div>
+            <label className="block mb-1 font-semibold">Name</label>
+            <input
+              type="text"
+              className="w-full border px-3 py-2 rounded"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+            />
+          </div>
+           <div>
             <label className="block mb-1 font-semibold">Email</label>
             <input
               type="email"
               className="w-full border px-3 py-2 rounded"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
+
+           <div>
+            <label className="block mb-1 font-semibold">Phone</label>
+            <input
+              type="tel"
+              className="w-full border px-3 py-2 rounded"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
               required
             />
           </div>
