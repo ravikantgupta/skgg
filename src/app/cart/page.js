@@ -3,16 +3,23 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { auth } from "../firebase";
 import Navbar from "../Componentes/Navbar/Navbar";
 import Footer from "../Componentes/Footer/Footer";
+import { OrderAPI } from "../utils/api";
 
 export default function CartPage() {
   const [cartItems, setCartItems] = useState([]);
   const [razorpayLoaded, setRazorpayLoaded] = useState(false);
+  const [user, setUser] = useState(null); // local user data
   const baseImageUrl = "https://skgpsd.com/skgpsdbe/public/";
+  const [orderSuccess, setOrderSuccess] = useState(false);
+  const [orderDetails, setOrderDetails] = useState({
+    payment_id: "",
+    items: [],
+    amount: 0,
+  });
 
-  // Load Razorpay script dynamically
+  // 🧩 Load Razorpay script
   useEffect(() => {
     const script = document.createElement("script");
     script.src = "https://checkout.razorpay.com/v1/checkout.js";
@@ -21,13 +28,27 @@ export default function CartPage() {
     document.body.appendChild(script);
   }, []);
 
-  // Load cart from localStorage
+  // 🛒 Load cart from localStorage
   useEffect(() => {
     const storedCart = JSON.parse(localStorage.getItem("cart") || "[]");
     setCartItems(storedCart);
+
+    console.log(storedCart);
+
+    let storedUser = null;
+    try {
+      const userData = localStorage.getItem("user");
+      if (userData && userData !== "undefined" && userData !== "null") {
+        storedUser = JSON.parse(userData);
+      }
+    } catch (error) {
+      console.error("Error parsing user data:", error);
+      storedUser = null;
+    }
+    setUser(storedUser);
   }, []);
 
-  // Remove item from cart
+  // ❌ Remove item from cart
   const removeFromCart = (id) => {
     const updatedCart = cartItems.filter((item) => item.id !== id);
     setCartItems(updatedCart);
@@ -35,7 +56,7 @@ export default function CartPage() {
     window.dispatchEvent(new Event("cartUpdated"));
   };
 
-  // Razorpay payment
+  // 💳 Razorpay Payment
   const loadRazorpay = (amount, itemNames) => {
     if (!razorpayLoaded) {
       alert("Payment system is loading, please try again in a moment.");
@@ -43,21 +64,53 @@ export default function CartPage() {
     }
 
     const options = {
-      key: "YOUR_RAZORPAY_KEY",
-      amount: amount * 100,
+      key: "rzp_live_RQ80xbBVO2uAeX",
+      amount: 1 * 100,
       currency: "INR",
       name: "PSD Album Shop",
       description: `Buying: ${itemNames}`,
-      handler: function (response) {
-        alert(`Payment Successful! Payment ID: ${response.razorpay_payment_id}`);
-        localStorage.removeItem("cart");
-        setCartItems([]);
-        window.dispatchEvent(new Event("cartUpdated"));
-      },
+     handler: function (response) {
+            const userData = JSON.parse(localStorage.getItem("user") || "{}"); // ensure user exists
+
+            const orderData = {
+              user_id: userData.id,
+              amount: amount,
+              payment_id: response.razorpay_payment_id,
+              items: cartItems.map((item) => ({
+                id: item.id,
+                name: item.name,
+                price: item.price,
+                url: item.url_key,
+              })),
+            };
+
+           
+            (async () => {
+              try {
+                const res = await OrderAPI.saveOrder(orderData);
+               
+                setOrderDetails({
+                    payment_id: response.razorpay_payment_id,
+                    items: orderData.items,
+                    amount: amount,
+                  });
+                  setOrderSuccess(true);
+
+                // Clear cart
+                localStorage.removeItem("cart");
+                setCartItems([]);
+                window.dispatchEvent(new Event("cartUpdated"));
+              } catch (err) {
+                console.error("Order save failed:", err);
+                alert("⚠️ Failed to save order. Please contact support.");
+              }
+            })();
+          },
+
       prefill: {
-        name: auth.currentUser?.displayName || "Customer",
-        email: auth.currentUser?.email || "customer@example.com",
-        contact: auth.currentUser?.phoneNumber || "9999999999",
+        name: user?.name || "",
+        email: user?.email || "",
+        contact: user?.phone || "",
       },
       theme: { color: "#3399cc" },
     };
@@ -66,9 +119,9 @@ export default function CartPage() {
     rzp.open();
   };
 
-  // Buy single item
+  // 🛍️ Buy single item
   const handleBuyNow = (item) => {
-    if (!auth.currentUser) {
+    if (!user) {
       alert("Please login first to purchase items.");
       window.location.href = "/login";
       return;
@@ -77,9 +130,9 @@ export default function CartPage() {
     loadRazorpay(amount, item.name);
   };
 
-  // Buy all items
+  // 💼 Buy all items
   const handleBuyAll = () => {
-    if (!auth.currentUser) {
+    if (!user) {
       alert("Please login first to purchase items.");
       window.location.href = "/login";
       return;
@@ -121,7 +174,7 @@ export default function CartPage() {
           </div>
         ) : (
           <>
-            {/* Cart Items */}
+            {/* 🧺 Cart Items */}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
               {cartItems.map((item, index) => (
                 <div
@@ -181,6 +234,63 @@ export default function CartPage() {
           </>
         )}
       </div>
+      {orderSuccess && (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div className="bg-white rounded-lg shadow-lg max-w-md w-full p-6">
+      <h2 className="text-2xl font-bold mb-4 text-center text-green-600">
+        Thank You for Your Purchase!
+      </h2>
+
+      <p className="mb-2 text-gray-700">
+        <span className="font-semibold">Payment ID:</span> {orderDetails.payment_id}
+      </p>
+
+      <p className="mb-4 text-gray-700">
+        <span className="font-semibold">Total Amount:</span> ₹{orderDetails.amount}
+      </p>
+
+      <h3 className="text-lg font-semibold mb-2">Items Purchased:</h3>
+
+      <div className="overflow-y-auto max-h-48 border-t border-b border-gray-200 py-2">
+        <div className="grid grid-cols-3 gap-2 font-semibold text-gray-800 px-2 py-1 border-b border-gray-100">
+          <span>Item</span>
+          <span className="text-right">Price</span>
+          <span className="text-center">View</span>
+        </div>
+
+        {orderDetails.items.map((item, idx) => (
+          <div
+            key={idx}
+            className="grid grid-cols-3 gap-2 items-center px-2 py-1 border-b border-gray-100"
+          >
+            <span className="truncate">{item.name}</span>
+            <span className="text-right">₹{item.price}</span>
+            <span className="text-center">
+              <a
+                href={`/${item.url}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-600 hover:underline"
+              >
+                View
+              </a>
+            </span>
+          </div>
+        ))}
+      </div>
+
+      <div className="text-center mt-4">
+        <button
+          onClick={() => setOrderSuccess(false)}
+          className="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700 transition"
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
       <Footer />
     </>
   );

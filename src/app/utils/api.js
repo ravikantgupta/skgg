@@ -43,3 +43,17 @@ export const UserAPI = {
   list: (token) => apiCall("users", "GET", null, token),
   update: (id, data, token) => apiCall(`users/${id}`, "PUT", data, token),
 };
+
+export const OrderAPI = {
+  // Save new order after payment
+  saveOrder: (orderData, token = null) =>
+    apiCall("save-order", "POST", orderData, token),
+
+  // Optional: Fetch all user orders
+  list: (userId, token = null) =>
+    apiCall(`orders/${userId}`, "GET", null, token),
+
+  // Optional: Fetch specific order
+  getById: (orderId, token = null) =>
+    apiCall(`orders/show/${orderId}`, "GET", null, token),
+};

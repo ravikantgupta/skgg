@@ -25,8 +25,8 @@ export default function LoginPage() {
 
       // ✅ Assuming Laravel returns { token, user, message }
       if (res?.data?.token) {
-        localStorage.setItem("authToken", res.token);
-        localStorage.setItem("user", JSON.stringify(res.user));
+        localStorage.setItem("authToken", res?.data?.token);
+        localStorage.setItem("user", JSON.stringify(res?.data?.userdata));
 
         alert("Login successful!");
         router.push("/");

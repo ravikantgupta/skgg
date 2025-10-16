@@ -19,13 +19,41 @@ type Category = {
   url_key: string;
 };
 
+
 export default function Navbar() {
   const [open, setOpen] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
   const [albumDropdownOpen, setAlbumDropdownOpen] = useState(false); // for mobile
+  const [user, setUser] = useState<any>();
 
   useEffect(() => {
     fetchCategories();
+  }, []);
+
+  useEffect(() => {
+    const checkLogin = () => {
+      const token = localStorage.getItem("authToken");
+      const userData = localStorage.getItem("user");
+      
+      if (token && userData) {
+        setIsLoggedIn(true);
+       setUser(JSON.parse(userData));
+      } else {
+        setIsLoggedIn(false);
+        setUser({});
+      }
+    };
+
+    checkLogin();
+
+    // Listen for global login/logout events
+    window.addEventListener("userLoggedIn", checkLogin);
+    window.addEventListener("userLoggedOut", checkLogin);
+
+    return () => {
+      window.removeEventListener("userLoggedIn", checkLogin);
+      window.removeEventListener("userLoggedOut", checkLogin);
+    };
   }, []);
 
   const fetchCategories = async () => {
@@ -65,13 +93,9 @@ export default function Navbar() {
   // Simulated login state
   const [isLoggedIn, setIsLoggedIn] = useState(false); // false = not logged in
 
-  // Sample user data
-  const user = {
-    name: "John Doe",
-    email: "john.doe@example.com",
-  };
-
+  
   const handleProfileClick = () => {
+    
     if (isLoggedIn) {
       setShowProfile(true);
     } else {
@@ -166,11 +190,15 @@ export default function Navbar() {
                 <h2 className="text-xl font-bold mb-4">User Profile</h2>
                 <p>
                   <span className="font-semibold">Name: </span>
-                  {user.name}
+                  {user.first_name}
                 </p>
                 <p className="mt-2">
                   <span className="font-semibold">Email: </span>
                   {user.email}
+                </p>
+                 <p className="mt-2">
+                  <span className="font-semibold">Phone: </span>
+                  {user.phone}
                 </p>
 
                 <div className="mt-4 flex justify-end gap-2">

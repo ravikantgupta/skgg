@@ -23,24 +23,41 @@ export default function SignupPage() {
       return;
     }
 
-    try {
-      //await createUserWithEmailAndPassword(auth, email, password);
-      await AuthAPI.register({
-        first_name:name,
-        email,
-        phone,
-        password,
-       
-      });
-      alert("Account created successfully!");
-      router.push("/"); // redirect to home page
+       try {
+            const res = await AuthAPI.register({
+              first_name: name,
+              email,
+              phone,
+              password,
+            });
 
-      // Optional: Notify Navbar or other components
-      window.dispatchEvent(new Event("userLoggedIn"));
-    } catch (err) {
-      console.error(err);
-      setError("Failed to create account. Try again.");
-    }
+            // ✅ Check Laravel response status (even if HTTP 200)
+            if (!res.data.success) {
+              const errors = res.data.errors || {};
+              const firstError = Object.values(errors)[0]?.[0] || "Registration failed.";
+              setError(firstError);
+              return;
+            }
+
+            alert("Account created successfully!");
+            router.push("/"); // redirect to home page
+
+            // Optional: Notify Navbar or other components
+          //  window.dispatchEvent(new Event("userLoggedIn"));
+          } catch (err) {
+            console.error("Signup Error:", err);
+
+            if (err.response?.data?.data?.errors) {
+              const errors = err.response.data.data.errors;
+              const firstError = Object.values(errors)[0]?.[0] || "Validation failed.";
+              setError(firstError);
+            } else if (err.response?.data?.message) {
+              setError(err.response.data.message);
+            } else {
+              setError("Failed to create account. Try again.");
+            }
+          }
+
   };
 
   return (
