@@ -39,7 +39,7 @@ export default function AlbumDetailPage() {
       name: album.name,
       image: album.image,
       price: album.price || 99, // 💰 demo price
-      url_key: album.url_key,
+      url_key: album.download_url,
     };
 
     if (!alreadyInCart) {

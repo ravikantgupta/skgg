@@ -271,8 +271,9 @@ export default function CartPage() {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-blue-600 hover:underline"
+               
               >
-                View
+                Download
               </a>
             </span>
           </div>

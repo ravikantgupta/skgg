@@ -78,7 +78,7 @@ export default function DetailPage({ params }) {
       id: album.id,
       name: album.name,
       image: album.cover_image || album.image,
-      url_key: album.url_key,
+      url_key: album.download_url,
       price: album.price || 99, // demo price
     };
     addToCart(product);
